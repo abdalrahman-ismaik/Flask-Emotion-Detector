@@ -1,3 +1,4 @@
+"""Flask server for emotion detection analysis."""
 from flask import Flask, request, jsonify, render_template
 from EmotionDetection.emotion_detection import emotion_detector
 
@@ -5,12 +6,18 @@ app = Flask(__name__)
 
 @app.route('/emotionDetector')
 def emotion_detector_route():
+    """
+    Analyze the emotion of the provided text.
+    
+    Returns:
+        JSON: Contains raw emotion analysis and formatted response string.
+        Error: Returns error message with 400 status for invalid input.
+    """
     text_to_analyze = request.args.get('textToAnalyze')
     if not text_to_analyze:
         return "Invalid text! Please provide a valid text input.", 400
 
     response = emotion_detector(text_to_analyze)
-    
     if response['dominant_emotion'] is None:
         return "Invalid text! Please try again.", 400
 
@@ -31,7 +38,6 @@ def emotion_detector_route():
         f"'sadness': {emotions['sadness']}. "
         f"The dominant emotion is {dominant_emotion}."
     )
-
     return jsonify({
         "raw_response": response,
         "formatted_response": formatted_response
@@ -39,6 +45,7 @@ def emotion_detector_route():
 
 @app.route('/')
 def index():
+    """Render the main index page."""
     return render_template('index.html')
 
 if __name__ == '__main__':
